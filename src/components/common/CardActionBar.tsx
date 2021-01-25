@@ -22,16 +22,16 @@ import React from 'react';
 
 import { grey100 } from '../../colors';
 
-export const CardActionBar: React.FC<{ className?: string }> = ({
-  className,
-  children,
-}) => {
+export const CardActionBar: React.FC<{
+  className?: string;
+  theme?: string;
+}> = ({ className, children, theme = 'surface' }) => {
   return (
     <ThemeProvider
       options={{ surface: grey100 }}
       className={classnames('CardActionBar', className)}
     >
-      <Theme use={['surface']} className="CardActionBar-container" tag="div">
+      <Theme use={[theme]} className="CardActionBar-container" tag="div">
         {children}
       </Theme>
     </ThemeProvider>

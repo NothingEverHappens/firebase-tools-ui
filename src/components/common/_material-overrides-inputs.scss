@@ -81,6 +81,7 @@ $mdc-select-outlined-hover-border: var(--fire-color-input-borders);
     padding: $input-default-padding; // base component doesnt do this yet
   }
 
+  .mdc-select__icon,
   .mdc-select__dropdown-icon {
     bottom: $input-default-padding - 2px; // base component doesnt do this yet
     z-index: $ZINDEX_MEDIUM;

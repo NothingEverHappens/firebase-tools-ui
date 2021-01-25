@@ -1,0 +1,20 @@
+@import '../../../common/color';
+
+.storageHeader {
+  :global .CardActionBar-container {
+    padding: 0 16px;
+  }
+
+  :global .InteractiveBreadCrumbBar {
+    width: 100%;
+
+    .BreadCrumbs-crumb a {
+      // TODO(kirjs): Use real color;
+      color: #000000;
+    }
+  }
+
+  :global .CardActionBar-actions {
+    flex-shrink: 0;
+  }
+}

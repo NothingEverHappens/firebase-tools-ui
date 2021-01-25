@@ -40,6 +40,7 @@ import {
   FunctionsIcon,
   HostingIcon,
   PubSubIcon,
+  StorageIcon,
 } from '../common/icons';
 import { Spinner } from '../common/Spinner';
 import { LocalWarningCallout } from './LocalWarningCallout';
@@ -55,7 +56,7 @@ export type Props = PropsFromState;
 export const Home: React.FC<Props> = ({ configRemote }) =>
   squash(configRemote, {
     onNone: () => <Spinner span={12} message="Overview Page Loading..." />,
-    onData: config => <Overview config={config} />,
+    onData: (config) => <Overview config={config} />,
     // Show all emulators as "off" on error.
     onError: () => <Overview config={{}} />,
   });
@@ -112,6 +113,13 @@ const Overview: React.FC<{
             config.hosting && `http://${config.hosting.hostAndPort}/`
           }
           linkLabel="View website"
+        />
+        <EmulatorCard
+          name="Storage emulator"
+          icon={<StorageIcon theme="secondary" />}
+          config={config.storage}
+          testId="emulator-info-auth"
+          linkTo="/storage"
         />
         <EmulatorCard
           name="PubSub emulator"

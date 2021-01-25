@@ -18,30 +18,28 @@ import { render, waitFor } from '@testing-library/react';
 import firebase from 'firebase';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
-import { useFirestore } from 'reactfire';
+import { MemoryRouter, useHistory } from 'react-router-dom';
+import { useStorage } from 'reactfire';
 import configureStore from 'redux-mock-store';
 
 import { AppState } from '../../../store';
-import { FirestoreEmulatedApiProvider } from '../FirestoreEmulatedApiProvider';
+import { StorageEmulatedApiProvider } from '../StorageApiProvider';
 
 interface RenderOptions {
   path?: string;
 }
 
-export const renderWithFirestore = async (
-  children: (
-    firestore: firebase.firestore.Firestore
-  ) => Promise<React.ReactElement>,
+export const renderWithStorage = async (
+  children: (storage: firebase.storage.Storage) => Promise<React.ReactElement>,
   options: RenderOptions = {}
 ) => {
   const component = render(
-    <FirestoreTestProviders path={options.path}>
-      <AsyncFirestore r={children}></AsyncFirestore>
-    </FirestoreTestProviders>
+    <StorageTestProviders path={options.path}>
+      <AsyncStorage callback={children} />
+    </StorageTestProviders>
   );
 
-  await waitFor(() => component.getByTestId(ASYNC_FIRESTORE_WRAPPER_TEST_ID), {
+  await waitFor(() => component.getByTestId(ASYNC_STORAGE_WRAPPER_TEST_ID), {
     // Some test setup can take longer than default 1000ms (esp. cold starts).
     timeout: 5000,
   });
@@ -49,14 +47,15 @@ export const renderWithFirestore = async (
   return component;
 };
 
-export const FirestoreTestProviders: React.FC<RenderOptions> = React.memo(
+export const StorageTestProviders: React.FC<RenderOptions> = React.memo(
   ({ children, path = '' }) => {
     const projectId = `${process.env.GCLOUD_PROJECT}-${Date.now()}`;
     const hostAndPort =
-      process.env.FIRESTORE_EMULATOR_HOST ||
-      process.env.FIREBASE_FIRESTORE_EMULATOR_ADDRESS;
+      process.env.STORAGE_EMULATOR_HOST ||
+      process.env.FIREBASE_STORAGE_EMULATOR_ADDRESS ||
+      '111:222';
     if (!projectId || !hostAndPort) {
-      throw new Error('FirestoreTestProviders requires a running Emulator');
+      throw new Error('StorageTestProviders requires a running Emulator');
     }
     const [host, port] = hostAndPort.split(':');
     const store = configureStore<Pick<AppState, 'config'>>()({
@@ -65,7 +64,7 @@ export const FirestoreTestProviders: React.FC<RenderOptions> = React.memo(
         result: {
           data: {
             projectId,
-            firestore: { hostAndPort, host, port: Number(port) },
+            storage: { hostAndPort, host, port: Number(port) },
           },
         },
       },
@@ -73,35 +72,35 @@ export const FirestoreTestProviders: React.FC<RenderOptions> = React.memo(
 
     return (
       <Provider store={store}>
-        <FirestoreEmulatedApiProvider disableDevTools>
+        <StorageEmulatedApiProvider disableDevTools>
           <MemoryRouter initialEntries={[path]}>
             <Suspense fallback={<h1 data-testid="fallback">Fallback</h1>}>
               {children}
             </Suspense>
           </MemoryRouter>
-        </FirestoreEmulatedApiProvider>
+        </StorageEmulatedApiProvider>
       </Provider>
     );
   }
 );
 
-const ASYNC_FIRESTORE_WRAPPER_TEST_ID = 'AsyncFirestore-wrapper';
+const ASYNC_STORAGE_WRAPPER_TEST_ID = 'AsyncStorage-wrapper';
 
-const AsyncFirestore: React.FC<{
-  r: (firestore: firebase.firestore.Firestore) => Promise<React.ReactElement>;
-}> = React.memo(({ r }) => {
-  const firestore = useFirestore();
-  firestore.collection('a').doc('b').get;
+const AsyncStorage: React.FC<{
+  callback: (storage: firebase.storage.Storage) => Promise<React.ReactElement>;
+}> = React.memo(({ callback }) => {
+  const storage = useStorage();
+
   const [
-    firestoreChildren,
-    setFirestoreChildren,
+    storageChildren,
+    setStorageChildren,
   ] = useState<React.ReactElement | null>(null);
 
   useEffect(() => {
-    r(firestore).then((c) => setFirestoreChildren(c));
-  }, [r, firestore, setFirestoreChildren]);
+    callback(storage).then(setStorageChildren);
+  }, [callback, storage, setStorageChildren]);
 
-  return firestoreChildren ? (
-    <div data-testid={ASYNC_FIRESTORE_WRAPPER_TEST_ID}>{firestoreChildren}</div>
+  return storageChildren ? (
+    <div data-testid={ASYNC_STORAGE_WRAPPER_TEST_ID}>{storageChildren}</div>
   ) : null;
 });

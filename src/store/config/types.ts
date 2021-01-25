@@ -24,6 +24,8 @@ export interface EmulatorConfig {
 
 export interface DatabaseConfig extends EmulatorConfig {}
 
+export interface StorageConfig extends EmulatorConfig {}
+
 export interface FirestoreConfig extends EmulatorConfig {}
 
 export interface FunctionsConfig extends EmulatorConfig {}
@@ -35,6 +37,7 @@ export interface AuthConfig extends EmulatorConfig {}
 export interface Config {
   projectId: string;
   database?: DatabaseConfig;
+  storage?: StorageConfig;
   auth?: AuthConfig;
   firestore?: FirestoreConfig;
   functions?: FunctionsConfig;

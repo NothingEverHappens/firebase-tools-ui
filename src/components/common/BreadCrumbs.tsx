@@ -18,7 +18,7 @@ import './BreadCrumbs.scss';
 
 import { IconButton } from '@rmwc/icon-button';
 import classnames from 'classnames';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 
 export interface Props {
@@ -26,6 +26,7 @@ export interface Props {
   base: string;
   path: string;
   onEdit?: () => void;
+  rootEl?: ReactElement;
 }
 
 const EMPTY_KEYS: string[] = [];
@@ -34,6 +35,7 @@ export const BreadCrumbs: React.FC<Props> = ({
   base,
   path,
   onEdit,
+  rootEl,
   children,
 }) => {
   const normalizedPath = path.startsWith('/') ? path.substr(1) : path;
@@ -48,7 +50,7 @@ export const BreadCrumbs: React.FC<Props> = ({
   return (
     <ul role="navigation" className="BreadCrumbs">
       <li className="BreadCrumbs-crumb">
-        <IconButton icon="home" tag={Link} to={base} />
+        <Link to={base}>{rootEl || <IconButton icon="home" />}</Link>
       </li>
 
       {keys.map((key, i) => (

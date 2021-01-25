@@ -1,0 +1,9 @@
+.canvasWrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 24px 0;
+
+  :global(.mdc-select__native-control) {
+    padding: 0 32px 0 48px;
+  }
+}

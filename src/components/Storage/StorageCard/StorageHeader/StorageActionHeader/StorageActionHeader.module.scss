@@ -1,0 +1,11 @@
+@import '../../../../common/color';
+
+.buttonWrapper {
+  border-left: 1px $COLOR_BACKGROUND_CODE solid;
+  margin-left: 20px;
+  padding: 0 20px;
+
+  button {
+    margin-right: 10px;
+  }
+}

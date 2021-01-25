@@ -1,0 +1,22 @@
+.metadata {
+  dd {
+    margin: 0;
+  }
+}
+
+.sidebar {
+  background: var(--mdc-theme-surface);
+  width: 300px;
+  flex-shrink: 0;
+  padding: 20px;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  dd {
+    margin-bottom: 8px;
+  }
+}
