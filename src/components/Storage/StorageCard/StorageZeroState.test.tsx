@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import firebase from 'firebase';
 
-type FullMetadata = firebase.storage.FullMetadata;
+import { fireEvent } from '@testing-library/react';
+import React from 'react';
 
-export interface StorageFolder {
-  type: 'folder';
-  name: string;
-  fullPath: string;
-}
+import { renderWithStorage } from '../testing/StorageTestProviders';
+import { StorageZeroState } from './StorageZeroState';
 
-export interface StorageFile extends FullMetadata {
-  type: 'file';
-}
+describe('StorageZeroState', () => {
+  it('updates the URL when selecting different bucket', async () => {
+    const { findByText } = await renderWithStorage(async () => {
+      return <StorageZeroState />;
+    });
 
-export type StorageItem = StorageFile | StorageFolder;
+    expect(await findByText('There are no files here yet')).toBeDefined();
+  });
+});

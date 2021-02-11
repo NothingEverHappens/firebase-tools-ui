@@ -3,11 +3,11 @@ import { Typography } from '@rmwc/typography';
 import React from 'react';
 
 import { formatBytes } from '../../../common/formatBytes';
-import { StorageFile2 } from '../../types';
+import { StorageFile } from '../../types';
 import styles from './StorageSidebar.module.scss';
 
 interface StorageSidebarProps {
-  file: StorageFile2;
+  file: StorageFile;
   onClose: () => void;
 }
 

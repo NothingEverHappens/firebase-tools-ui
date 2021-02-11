@@ -17,8 +17,8 @@
 import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 
-import * as apiProvider from '../../StorageApiProvider';
-import { renderWithStorage } from '../../testing/StorageTestProviders';
+import * as apiProvider from '../../../StorageApiProvider';
+import { renderWithStorage } from '../../../testing/StorageTestProviders';
 import { StorageRefreshButton } from './StorageRefreshButton';
 
 describe('StorageRefreshButton', () => {

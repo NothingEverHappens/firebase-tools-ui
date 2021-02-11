@@ -36,10 +36,8 @@ import { StorageCanvas } from './StorageCard/StorageCanvas/StorageCanvas';
 import StorageTable from './StorageCard/StorageTable';
 
 export const StorageRoute: React.FC = () => {
-  // HACK(yuchenshi): We do not switch on storageUsersResult to make sure Storage
-  // Emulator correctly shows up as disabled (instead of forever loading).
-  // TODO(yuchenshi): Fix forever loading in store when storage is disabled.
   const projectIdResult = useSelector(getProjectIdResult);
+
   return handle(combineData(projectIdResult), {
     onNone: () => <Spinner span={12} message="Storage Emulator Loading..." />,
     onError: () => <StorageRouteDisabled />,
@@ -79,14 +77,8 @@ export const StorageRouteWrapper: React.FC = () => {
     <Suspense fallback={<div>lol</div>}>
       <StorageApiProvider>
         <Switch>
-          <Route
-            path={path + '/:bucket/:path*'}
-            component={StorageRoute}
-          ></Route>
-          <Redirect
-            from={path}
-            to={path + '/angular-presentation.appspot.com'}
-          />
+          <Route path={path + '/:bucket/:path*'} component={StorageRoute} />
+          <Redirect from={path} to={path + '/pirojok-a935e.appspot.com'} />
         </Switch>
       </StorageApiProvider>
     </Suspense>

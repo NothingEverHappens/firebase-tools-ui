@@ -4,15 +4,15 @@ import { useHistory } from 'react-router-dom';
 import {
   CardActionBar,
   CardActionBarActions,
-} from '../../../common/CardActionBar';
-import { CopyButton } from '../../../common/CopyButton';
-import { InteractiveBreadCrumbBar } from '../../../common/InteractiveBreadCrumbBar';
-import { useBucket, useStorageFiles } from '../../StorageApiProvider';
+} from '../../../../common/CardActionBar';
+import { CopyButton } from '../../../../common/CopyButton';
+import { InteractiveBreadCrumbBar } from '../../../../common/InteractiveBreadCrumbBar';
+import { useBucket, useStorageFiles } from '../../../StorageApiProvider';
 import styles from './StorageHeader.module.scss';
 import { StorageRefreshButton } from './StorageRefreshButton';
-import { UploadButton } from './UploadButton';
+import { StorageUploadButton } from './StorageUploadButton';
 
-export const StorageHeader: React.FC = () => {
+export const StorageDefaultHeader: React.FC = () => {
   const { path } = useStorageFiles();
   const history = useHistory();
   const [bucket] = useBucket();
@@ -31,7 +31,7 @@ export const StorageHeader: React.FC = () => {
         />
         <CardActionBarActions>
           <StorageRefreshButton></StorageRefreshButton>
-          <UploadButton />
+          <StorageUploadButton />
         </CardActionBarActions>
       </CardActionBar>
     </>

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
 
-import * as apiProvider from '../../StorageApiProvider';
-import { renderWithStorage } from '../../testing/StorageTestProviders';
-import { UploadButton } from './UploadButton';
+import * as apiProvider from '../../../StorageApiProvider';
+import { renderWithStorage } from '../../../testing/StorageTestProviders';
+import { uploadFile } from '../../../testing/testUtils';
+import { StorageUploadButton } from './StorageUploadButton';
 
 describe('UploadButton', () => {
   it('Triggers appropriate callback', async () => {
@@ -28,21 +28,15 @@ describe('UploadButton', () => {
       .mockImplementation(() => ({ uploadFiles } as any));
 
     const uploadFiles = jest.fn();
-    const { getByTestId } = await renderWithStorage(async () => {
-      return <UploadButton />;
+    const { getByTestId } = await renderWithStorage(async (storage) => {
+      console.log(storage);
+
+      return <StorageUploadButton />;
     });
 
     expect(uploadFiles).not.toHaveBeenCalled();
 
-    const file = new File(['pirojok'], 'lol.png', {
-      type: 'text/plain',
-    });
-
-    await act(async () => {
-      await fireEvent.change(await getByTestId('file-uploader'), {
-        target: { files: [file] },
-      });
-    });
+    uploadFile((await getByTestId('file-uploader')) as HTMLInputElement);
 
     expect(uploadFiles).toHaveBeenCalled();
   });

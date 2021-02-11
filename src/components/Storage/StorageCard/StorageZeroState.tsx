@@ -8,15 +8,15 @@ export const StorageZeroState: React.FC = () => {
   return (
     <div className={styles.zeroState}>
       <UploadDropzone>
-        <p>
-          <Typography
-            use="body2"
-            aria-live="polite"
-            theme="textSecondaryOnBackground"
-          >
-            There are no files here yet
-          </Typography>
-        </p>
+        <Typography
+          tag="div"
+          use="body2"
+          aria-live="polite"
+          theme="textSecondaryOnBackground"
+        >
+          There are no files here yet
+        </Typography>
+
         <Typography
           use="body1"
           aria-live="polite"

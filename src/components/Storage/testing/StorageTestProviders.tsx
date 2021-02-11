@@ -18,12 +18,15 @@ import { render, waitFor } from '@testing-library/react';
 import firebase from 'firebase';
 import React, { Suspense, useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
-import { MemoryRouter, useHistory } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { useStorage } from 'reactfire';
 import configureStore from 'redux-mock-store';
 
 import { AppState } from '../../../store';
-import { StorageEmulatedApiProvider } from '../StorageApiProvider';
+import {
+  StorageEmulatedApiProvider,
+  useStorageFiles,
+} from '../StorageApiProvider';
 
 interface RenderOptions {
   path?: string;
@@ -39,12 +42,20 @@ export const renderWithStorage = async (
     </StorageTestProviders>
   );
 
+  const clearAll = async () => {
+    // Always have empty state in the beginning.
+    (await component.findByText('Delete all files')).click();
+  };
+
   await waitFor(() => component.getByTestId(ASYNC_STORAGE_WRAPPER_TEST_ID), {
     // Some test setup can take longer than default 1000ms (esp. cold starts).
     timeout: 5000,
   });
 
-  return component;
+  return {
+    ...component,
+    clearAll,
+  };
 };
 
 export const StorageTestProviders: React.FC<RenderOptions> = React.memo(
@@ -74,7 +85,9 @@ export const StorageTestProviders: React.FC<RenderOptions> = React.memo(
       <Provider store={store}>
         <StorageEmulatedApiProvider disableDevTools>
           <MemoryRouter initialEntries={[path]}>
-            <Suspense fallback={<h1 data-testid="fallback">Fallback</h1>}>
+            <Suspense
+              fallback={<h1 data-testid="fallback">Storage Fallback</h1>}
+            >
               {children}
             </Suspense>
           </MemoryRouter>
@@ -97,7 +110,7 @@ const AsyncStorage: React.FC<{
   ] = useState<React.ReactElement | null>(null);
 
   useEffect(() => {
-    callback(storage).then(setStorageChildren);
+    callback({ ...storage }).then(setStorageChildren);
   }, [callback, storage, setStorageChildren]);
 
   return storageChildren ? (

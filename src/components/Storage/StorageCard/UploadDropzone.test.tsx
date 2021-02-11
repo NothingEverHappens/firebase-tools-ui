@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import firebase from 'firebase';
 
-type FullMetadata = firebase.storage.FullMetadata;
+import React from 'react';
 
-export interface StorageFolder {
-  type: 'folder';
-  name: string;
-  fullPath: string;
-}
+import { renderWithStorage } from '../testing/StorageTestProviders';
+import { UploadDropzone } from './UploadDropzone';
 
-export interface StorageFile extends FullMetadata {
-  type: 'file';
-}
+describe('UploadDropzone', () => {
+  it('updates the URL when selecting different bucket', async () => {
+    const childText = 'Priojok';
+    const { findByText } = await renderWithStorage(async () => {
+      return <UploadDropzone>{childText}</UploadDropzone>;
+    });
 
-export type StorageItem = StorageFile | StorageFolder;
+    expect(await findByText(childText)).toBeDefined();
+  });
+});

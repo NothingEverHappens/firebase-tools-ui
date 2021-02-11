@@ -2,11 +2,11 @@ import { Button } from '@rmwc/button';
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-import { useStorageFiles } from '../../StorageApiProvider';
+import { useStorageFiles } from '../../../StorageApiProvider';
 
 export interface UploadButtonProps {}
 
-export const UploadButton: React.FC<UploadButtonProps> = () => {
+export const StorageUploadButton: React.FC<UploadButtonProps> = () => {
   const { uploadFiles } = useStorageFiles();
   const onDrop = useCallback(
     (files) => {

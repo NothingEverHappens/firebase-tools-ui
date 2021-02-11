@@ -18,6 +18,7 @@ import React from 'react';
 
 import { StorageRoute } from './index';
 import { renderWithStorage } from './testing/StorageTestProviders';
+import { uploadFile } from './testing/testUtils';
 
 const host = 'localhost';
 const port = 5002;
@@ -28,50 +29,41 @@ const port = 5002;
 // };
 //
 describe('StorageRoute', () => {
-  it('renders loading when projectId is not ready', async () => {
-    const { getByText } = await renderWithStorage(async () => <StorageRoute />);
+  // it('renders loading when projectId is not ready', async () => {
+  //   const { getByText } = await renderWithStorage(async () => <StorageRoute/>);
+  //
+  //   expect(getByText('Loading Storage SDK')).not.toBeNull();
+  // });
+  //
+  // it('renders zero state', async () => {
+  //   const { getByTestId, findByText, findByTestId, getByText, queryByText } = await renderWithStorage(async () =>
+  //     <StorageRoute/>);
+  //
+  //   await findByText('There are no files here yet', {}, { timeout: 5000 });
+  //
+  // });
 
-    expect(getByText('Loading Storage SDK')).not.toBeNull();
+  it('Allows to upload files', async () => {
+    const {
+      getByTestId,
+      findByText,
+      getByText,
+      queryByText,
+      clearAll,
+    } = await renderWithStorage(async () => <StorageRoute />);
+
+    await clearAll();
+
+    await findByText('There are no files here yet', {}, { timeout: 5004 });
+
+    const filename = 'lol.png';
+
+    expect(queryByText(filename)).toBeNull();
+    await uploadFile(
+      (await getByTestId('file-uploader')) as HTMLInputElement,
+      filename
+    );
+
+    expect(getByText(filename)).toBeDefined();
   });
 });
-//
-//   it('renders loading when config is not ready', () => {
-//     const { getByText } = render(
-//       <StorageRoute
-//         storageUsersResult={{ data: [] }}
-//         projectIdResult={{ data: 'pirojok' }}
-//         storageConfigResult={undefined}
-//       />,
-//     );
-//     expect(getByText('Storage Emulator Loading...')).not.toBeNull();
-//   });
-//
-//   it('renders error when loading config fails', () => {
-//     const { getByText } = render(
-//       <StorageRoute
-//         projectIdResult={{ data: 'pirojok' }}
-//         storageConfigResult={{ error: { message: 'Oh, snap!' } }}
-//         storageUsersResult={{ data: [] }}
-//       />,
-//     );
-//     expect(getByText(/not running/)).not.toBeNull();
-//   });
-//
-//   it('displays storage', async () => {
-//     const store = getMockStorageStore();
-//
-//     const { getByText } = render(
-//       <Provider store={store}>
-//         // Ripples cause "not wrapped in act()" warning.
-//         <RMWCProvider ripple={false}>
-//           <StorageRoute
-//             storageUsersResult={{ data: [] }}
-//             projectIdResult={{ data: 'pirojok' }}
-//             storageConfigResult={{ data: sampleConfig }}
-//           />
-//         </RMWCProvider>
-//       </Provider>,
-//     );
-//     expect(getByText(/No users for this project yet/)).not.toBeNull();
-//   });
-// });

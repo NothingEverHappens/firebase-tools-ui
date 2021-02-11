@@ -1,3 +1,4 @@
+import { randomId } from '@rmwc/base';
 import { Checkbox } from '@rmwc/checkbox';
 import {
   DataTable,
@@ -8,22 +9,23 @@ import {
   DataTableHeadCell,
   DataTableRow,
 } from '@rmwc/data-table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { formatBytes } from '../../common/formatBytes';
 import { removeTrailingSlash } from '../StorageApiProvider';
-import { StorageFile } from '../types';
+import { StorageItem } from '../types';
+import { StorageIcon } from './Shared/StorageIcon';
 import styles from './Storage.module.scss';
 import { StorageActionHeader } from './StorageHeader/StorageActionHeader/StorageActionHeader';
-import { StorageHeader } from './StorageHeader/StorageHeader';
+import { StorageDefaultHeader } from './StorageHeader/StorageDefaultHeader/StorageDefaultHeader';
 import StorageSidebar from './StorageSidebar/StorageSidebar';
 import { StorageZeroState } from './StorageZeroState';
 
 interface StorageTableRowProps {
-  file: StorageFile;
-  onToggle: (file: StorageFile) => void;
-  onOpen: (file: StorageFile) => void;
+  file: StorageItem;
+  onToggle: (file: StorageItem) => void;
+  onOpen: (file: StorageItem) => void;
   checked: boolean;
   selected: boolean;
 }
@@ -36,22 +38,40 @@ export const StorageTableRow: React.FC<StorageTableRowProps> = ({
   selected,
 }) => {
   const { url } = useRouteMatch();
+  const [labelId] = useState(randomId('storage-table'));
+  const [checkboxId] = useState(randomId('storage-table'));
+
   return (
-    <DataTableRow selected={selected} onClick={() => onOpen(file)}>
+    <DataTableRow
+      tabIndex={0}
+      role="row button"
+      selected={selected}
+      onClick={() => {
+        onOpen(file);
+      }}
+    >
       <DataTableCell>
         <Checkbox
+          id={checkboxId}
+          aria-labelledby={labelId}
           onChange={() => onToggle(file)}
           onClick={(e) => e.stopPropagation()}
           checked={checked}
         />
       </DataTableCell>
-      <DataTableCell>
+      <DataTableCell id={labelId}>
         {file.type === 'file' ? (
-          file.name
-        ) : (
-          <Link to={removeTrailingSlash(url) + '/' + file.name}>
+          <>
+            <StorageIcon contentType={file.contentType!} />
             {file.name}
-          </Link>
+          </>
+        ) : (
+          <>
+            <StorageIcon contentType="folder" />
+            <Link to={removeTrailingSlash(url) + '/' + file.name}>
+              {file.name}
+            </Link>
+          </>
         )}
       </DataTableCell>
       <DataTableCell>
@@ -68,18 +88,16 @@ export const StorageTableRow: React.FC<StorageTableRowProps> = ({
 };
 
 interface StorageTableProps {
-  files: StorageFile[];
+  files: StorageItem[];
 }
 
 export const StorageTable: React.FC<StorageTableProps> = ({ files }) => {
   const [selectedFilesPaths, setSelectedFilesPaths] = useState(
     new Set<string>()
   );
-  const [selectedFile, setSelectedFile] = useState<StorageFile | null>(
-    files[0]
-  );
+  const [selectedFile, setSelectedFile] = useState<StorageItem | null>(null);
 
-  const toggleCheckbox = (file: StorageFile) => {
+  const toggleCheckbox = (file: StorageItem) => {
     const path = file.fullPath;
     selectedFilesPaths.has(path)
       ? selectedFilesPaths.delete(path)
@@ -91,6 +109,12 @@ export const StorageTable: React.FC<StorageTableProps> = ({ files }) => {
     setSelectedFilesPaths(new Set());
     setSelectedFile(null);
   };
+
+  useEffect(() => {
+    if (files.length === 0) {
+      clearSelection();
+    }
+  }, [files]);
 
   const toggleAll = () => {
     if (selectedFilesPaths.size < files.length) {
@@ -106,7 +130,7 @@ export const StorageTable: React.FC<StorageTableProps> = ({ files }) => {
 
   return (
     <>
-      {selectedFilesPaths.size === 0 && <StorageHeader />}
+      {selectedFilesPaths.size === 0 && <StorageDefaultHeader />}
       {selectedFilesPaths.size > 0 && (
         <StorageActionHeader
           clearSelection={clearSelection}
@@ -123,6 +147,11 @@ export const StorageTable: React.FC<StorageTableProps> = ({ files }) => {
                     <Checkbox
                       disabled={files.length === 0}
                       onClick={toggleAll}
+                      aria-label={
+                        selectedFilesPaths.size === files.length
+                          ? 'Select none'
+                          : 'Select all'
+                      }
                       indeterminate={
                         selectedFilesPaths.size > 0 &&
                         selectedFilesPaths.size < files.length
